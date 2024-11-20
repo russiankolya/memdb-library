@@ -2,16 +2,16 @@
 #include <fstream>
 #include <set>
 
-std::unique_ptr<CellType> GetPointerByType(Column::Type type) {
+std::unique_ptr<DataType> GetPointerByType(Column::Type type) {
     switch (type) {
         case Column::Type::Int32Type:
-            return std::make_unique<CellTypeInt32>();
+            return std::make_unique<DataTypeInt32>();
         case Column::Type::BoolType:
-            return std::make_unique<CellTypeBool>();
+            return std::make_unique<DataTypeBool>();
         case Column::Type::StringType:
-            return std::make_unique<CellTypeString>();
+            return std::make_unique<DataTypeString>();
         case Column::Type::BytesType:
-            return std::make_unique<CellTypeBytes>();
+            return std::make_unique<DataTypeBytes>();
         default:
             throw std::runtime_error("Unknown column type");
     }

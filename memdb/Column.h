@@ -11,17 +11,17 @@ public:
 
     const std::string& GetName() const;
     const Type GetType() const;
-    const std::unique_ptr<CellType>& GetDefaultValue() const;
+    const std::unique_ptr<DataType>& GetDefaultValue() const;
     const std::set<Attribute>& GetAttributes() const;
 
     void SetName(const std::string&& name);
     void SetType(const Type type);
-    void SetDefaultValue(std::unique_ptr<CellType>&& default_value);
+    void SetDefaultValue(std::unique_ptr<DataType>&& default_value);
     void SetAttributes(std::set<Attribute>&& attributes);
 
 private:
     std::string name_;
     Type type_{};
-    std::unique_ptr<CellType> default_value_;
+    std::unique_ptr<DataType> default_value_;
     std::set<Attribute> attributes_;
 };

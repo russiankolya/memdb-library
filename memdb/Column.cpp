@@ -9,7 +9,7 @@ const Column::Type Column::GetType() const {
     return type_;
 }
 
-const std::unique_ptr<CellType>& Column::GetDefaultValue() const {
+const std::unique_ptr<DataType>& Column::GetDefaultValue() const {
     return default_value_;
 }
 
@@ -25,7 +25,7 @@ void Column::SetType(const Column::Type type) {
     type_ = type;
 }
 
-void Column::SetDefaultValue(std::unique_ptr<CellType>&& default_value) {
+void Column::SetDefaultValue(std::unique_ptr<DataType>&& default_value) {
     default_value_ = std::move(default_value);
 }
 

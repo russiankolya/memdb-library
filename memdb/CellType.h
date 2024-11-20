@@ -3,44 +3,44 @@
 #include <memory>
 #include <string>
 
-class CellType {
+class DataType {
 public:
-    virtual ~CellType() noexcept;
+    virtual ~DataType() noexcept;
 
     virtual void Encode(std::ofstream &out) = 0;
     virtual void Decode(std::ifstream &in) = 0;
 };
 
-class CellTypeInt32 : public CellType {
+class DataTypeInt32 final : public DataType {
 public:
     void Encode(std::ofstream& out) override;
     void Decode(std::ifstream& in) override;
 private:
-    int32_t value_;
+    int32_t value_{};
 };
 
-class CellTypeBool : public CellType {
+class DataTypeBool final : public DataType {
 public:
     void Encode(std::ofstream& out) override;
     void Decode(std::ifstream& in) override;
 private:
-    bool value_;
+    bool value_{};
 };
 
-class CellTypeString : public CellType {
+class DataTypeString final : public DataType {
 public:
     void Encode(std::ofstream& out) override;
     void Decode(std::ifstream& in) override;
 private:
     std::unique_ptr<std::string> value_;
-    size_t size_;
+    size_t size_{};
 };
 
-class CellTypeBytes : public CellType {
+class DataTypeBytes final : public DataType {
 public:
     void Encode(std::ofstream& out) override;
     void Decode(std::ifstream& in) override;
 private:
     std::unique_ptr<std::vector<char>> value_;
-    size_t size_;
+    size_t size_{};
 };
