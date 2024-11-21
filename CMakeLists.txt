@@ -13,3 +13,5 @@ target_link_libraries(memdb-library PUBLIC memdb)
 target_include_directories(memdb-library PUBLIC
         "${PROJECT_BINARY_DIR}"
 )
+
+add_subdirectory(googletest)
