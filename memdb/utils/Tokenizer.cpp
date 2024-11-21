@@ -2,188 +2,192 @@
 #include <vector>
 #include <unordered_set>
 
-Tokenizer::Tokenizer(std::string&& source) : state_(State::Base), source_(std::move(source)) {
+Tokenizer::Tokenizer(std::string&& source) : source_(std::move(source)) {
     source_ += " ";
-}
-
-char Tokenizer::Peek() const {
-    if (current_pos_ >= source_.size()) {
-        throw std::out_of_range("Tokenizer is out of range");
-    }
-    return source_[current_pos_];
-}
-
-void Tokenizer::Advance() {
-    ++current_pos_;
-    if (current_pos_ >= source_.size()) {
-        state_ = State::End;
-    }
 }
 
 const std::unordered_set<std::string> keywords = {
      "create", "table", "unique", "autoincrement", "key", "int32", "bool", "string",
      "bytes", "insert", "to", "select", "from", "where", "update", "set",
-     "delete", "join", "on", "index", "by"};
+     "delete", "join", "on", "ordered", "unordered", "index", "by"};
 
 const std::unordered_set<std::string> logic_keywords = {"and", "or", "not"};
 
 const std::unordered_set<std::string> bool_keywords = {"true", "false"};
 
 const std::unordered_set<std::string> operators = {"=", "!=", "<", "<=", ">", ">=",
-    "+" , "-", "*", "/", "%"};
+    "+" , "-", "*", "/", "%", "|"};
 
 const std::unordered_set delimiters = {':', ';', ',', '(', ')', '[', ']', '{', '}'};
 
-std::vector<Token> Tokenizer::Tokenize() {
+std::vector<Token> Tokenizer::Tokenize() const {
     std::vector<Token> tokens;
-    while (state_ != State::End) {
-        switch (state_) {
+    State current_state = State::Base;
+    size_t current_pos = 0;
+    std::string current_token;
+
+    auto advance = [&] {
+        ++current_pos;
+        if (current_pos >= source_.size()) {
+            current_state = State::End;
+        }
+    };
+
+    auto peek = [&] {
+        if (current_pos >= source_.size()) {
+            throw std::out_of_range("Tokenizer is out of range");
+        }
+        return source_[current_pos];
+    };
+
+    while (current_state != State::End) {
+        switch (current_state) {
             case State::Base: {
-                if (!current_token_.empty()) {
+                if (!current_token.empty()) {
                     throw std::logic_error("Tokenize error (current_token is not empty in base state)");
                 }
-                if (isalpha(Peek()) || Peek() == '_') {
-                    state_ = State::WordPrefix;
-                    current_token_ += Peek();
-                    Advance();
+                if (isalpha(peek()) || peek() == '_') {
+                    current_state = State::WordPrefix;
+                    current_token += peek();
+                    advance();
                     break;
                 }
-                if (isdigit(Peek())) {
-                    state_ = State::NumberPrefix;
-                    current_token_ += Peek();
-                    Advance();
+                if (isdigit(peek())) {
+                    current_state = State::NumberPrefix;
+                    current_token += peek();
+                    advance();
                     break;
                 }
-                if (Peek() == '"') {
-                    state_ = State::StringPrefix;
-                    current_token_ += Peek();
-                    Advance();
+                if (peek() == '"') {
+                    current_state = State::StringPrefix;
+                    current_token += peek();
+                    advance();
                     break;
                 }
-                if (operators.contains(std::string(1, Peek()))) {
-                    state_ = State::OperatorPrefix;
-                    current_token_ += Peek();
-                    Advance();
+                if (operators.contains(std::string(1, peek()))) {
+                    current_state = State::OperatorPrefix;
+                    current_token += peek();
+                    advance();
                     break;
                 }
-                if (delimiters.contains(Peek())) {
-                    tokens.emplace_back(Token(Token::Type::Delimiter, std::string(1, Peek())));
-                    Advance();
+                if (delimiters.contains(peek())) {
+                    tokens.emplace_back(Token(Token::Type::Delimiter, std::string(1, peek())));
+                    advance();
                     break;
                 }
-                if (Peek() == ' ') {
-                    Advance();
+                if (isspace(peek())) {
+                    advance();
                     break;
                 }
                 throw std::invalid_argument("Tokenize error (symbol was not recognized)");
             }
             case State::WordPrefix: {
-                if (current_token_.empty()) {
+                if (current_token.empty()) {
                     throw std::logic_error("Tokenize error (current_token is empty in prefix state)");
                 }
-                if (isalpha(Peek()) || isdigit(Peek()) || Peek() == '_') {
-                    current_token_ += Peek();
-                    Advance();
+                if (isalpha(peek()) || isdigit(peek()) || peek() == '_' || peek() == '.') {
+                    current_token += peek();
+                    advance();
                     break;
                 }
-                std::string current_token_lowercase = current_token_;
+                std::string current_token_lowercase = current_token;
                 std::ranges::transform(current_token_lowercase, current_token_lowercase.begin(),
                                        tolower);
                 if (keywords.contains(current_token_lowercase)) {
                     tokens.emplace_back(Token(Token::Type::Keyword, current_token_lowercase));
-                    current_token_.clear();
-                    state_ = State::Base;
+                    current_token.clear();
+                    current_state = State::Base;
                     break;
                 }
                 if (logic_keywords.contains(current_token_lowercase)) {
                     tokens.emplace_back(Token(Token::Type::LogicKeyword, current_token_lowercase));
-                    current_token_.clear();
-                    state_ = State::Base;
+                    current_token.clear();
+                    current_state = State::Base;
                     break;
                 }
                 if (bool_keywords.contains(current_token_lowercase)) {
                     tokens.emplace_back(Token(Token::Type::Bool, current_token_lowercase));
-                    current_token_.clear();
-                    state_ = State::Base;
+                    current_token.clear();
+                    current_state = State::Base;
                     break;
                 }
-                tokens.emplace_back(Token(Token::Type::Identifier, current_token_));
-                current_token_.clear();
-                state_ = State::Base;
+                tokens.emplace_back(Token(Token::Type::Identifier, current_token));
+                current_token.clear();
+                current_state = State::Base;
                 break;
             }
             case State::NumberPrefix: {
-                if (current_token_.empty()) {
+                if (current_token.empty()) {
                     throw std::logic_error("Tokenize error (current_token is empty in prefix state)");
                 }
-                if (isdigit(Peek())) {
-                    current_token_ += Peek();
-                    Advance();
+                if (isdigit(peek())) {
+                    current_token += peek();
+                    advance();
                     break;
                 }
-                if (current_token_ == "0" && Peek() == 'x') {
-                    state_ = State::BytesPrefix;
-                    current_token_ += Peek();
-                    Advance();
+                if (current_token == "0" && peek() == 'x') {
+                    current_state = State::BytesPrefix;
+                    current_token += peek();
+                    advance();
                     break;
                 }
                 // TODO: add check for number correctness
-                tokens.emplace_back(Token(Token::Type::Number, current_token_));
-                current_token_.clear();
-                state_ = State::Base;
+                tokens.emplace_back(Token(Token::Type::Number, current_token));
+                current_token.clear();
+                current_state = State::Base;
                 break;
             }
             case State::BytesPrefix: {
-                if (current_token_.empty()) {
+                if (current_token.empty()) {
                     throw std::logic_error("Tokenize error (current_token is empty in prefix state)");
                 }
-                if (isdigit(Peek()) || (isalpha(Peek()) &&
-                    (tolower(Peek()) >= 'a' && tolower(Peek()) <= 'f'))) {
-                    current_token_ += Peek();
-                    Advance();
+                if (isdigit(peek()) || (isalpha(peek()) &&
+                    (tolower(peek()) >= 'a' && tolower(peek()) <= 'f'))) {
+                    current_token += peek();
+                    advance();
                     break;
                 }
-                if (current_token_ == "0x") {
+                if (current_token == "0x") {
                     throw std::invalid_argument("Tokenize error (invalid hexadecimal string)");
                 }
-                tokens.emplace_back(Token(Token::Type::Bytes, current_token_));
-                current_token_.clear();
-                state_ = State::Base;
+                tokens.emplace_back(Token(Token::Type::Bytes, current_token));
+                current_token.clear();
+                current_state = State::Base;
                 break;
             }
             case State::StringPrefix: {
-                if (current_token_.empty()) {
+                if (current_token.empty()) {
                     throw std::logic_error("Tokenize error (current_token is empty in prefix state)");
                 }
-                if (Peek() == '"') {
-                    current_token_ += Peek();
-                    tokens.emplace_back(Token(Token::Type::String, current_token_));
-                    current_token_.clear();
-                    Advance();
-                    state_ = State::Base;
+                if (peek() == '"') {
+                    current_token += peek();
+                    tokens.emplace_back(Token(Token::Type::String, current_token));
+                    current_token.clear();
+                    advance();
+                    current_state = State::Base;
                     break;
                 }
-                current_token_ += Peek();
-                Advance();
+                current_token += peek();
+                advance();
                 break;
             }
             case State::OperatorPrefix: {
-                if (current_token_.empty()) {
+                if (current_token.empty()) {
                     throw std::logic_error(
                         "Tokenize error (current_token is empty in prefix state)");
                 }
-                if (Peek() == '=' &&
-                    (current_token_ == "<" || current_token_ == ">" || current_token_ == "!")) {
-                    current_token_ += Peek();
-                    tokens.emplace_back(Token(Token::Type::Operator, current_token_));
-                    current_token_.clear();
-                    state_ = State::Base;
-                    Advance();
+                if (peek() == '=' &&
+                    (current_token == "<" || current_token == ">" || current_token == "!")) {
+                    current_token += peek();
+                    tokens.emplace_back(Token(Token::Type::Operator, current_token));
+                    current_token.clear();
+                    current_state = State::Base;
+                    advance();
                     break;
                 }
-                tokens.emplace_back(Token(Token::Type::Operator, current_token_));
-                current_token_.clear();
-                state_ = State::Base;
+                tokens.emplace_back(Token(Token::Type::Operator, current_token));
+                current_token.clear();
+                current_state = State::Base;
                 break;
             }
             default: {
@@ -193,4 +197,3 @@ std::vector<Token> Tokenizer::Tokenize() {
     }
     return tokens;
  }
-
