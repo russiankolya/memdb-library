@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <set>
-#include "CellType.h"
+#include "DataType.h"
 
 class Column {
 public:
@@ -10,7 +10,7 @@ public:
     enum class Attribute { Unique, Autoincrement, Key };
 
     const std::string& GetName() const;
-    const Type GetType() const;
+    Type GetType() const;
     const std::unique_ptr<DataType>& GetDefaultValue() const;
     const std::set<Attribute>& GetAttributes() const;
 
