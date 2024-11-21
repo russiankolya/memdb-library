@@ -5,7 +5,7 @@ const std::string& Column::GetName() const {
     return name_;
 }
 
-const Column::Type Column::GetType() const {
+Column::Type Column::GetType() const {
     return type_;
 }
 
