@@ -1,6 +1,7 @@
 #pragma once
-#include "Token.h"
 #include <vector>
+
+#include "Token.h"
 
 class QueryHandler {
 public:

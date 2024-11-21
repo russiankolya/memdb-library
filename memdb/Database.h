@@ -1,7 +1,8 @@
 #pragma once
-#include "Table.h"
 #include <map>
 #include <memory>
+
+#include "Table.h"
 
 class Database {
 public:

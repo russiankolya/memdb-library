@@ -1,14 +1,15 @@
 #include "Tokenizer.h"
-#include <vector>
+
 #include <unordered_set>
+#include <vector>
 
 Tokenizer::Tokenizer(std::string&& source) : source_(std::move(source)) {
     source_ += " ";
 }
 
 const std::unordered_set<std::string> keywords = {
-     "create", "table", "unique", "autoincrement", "key", "int32", "bool", "string",
-     "bytes", "insert", "to", "select", "from", "where", "update", "set",
+    "create", "table",  "unique", "autoincrement", "key",       "int32", "bool",   "string",
+    "bytes",  "insert", "to",     "select",        "from",      "where", "update", "set",
     "delete", "join",   "on",     "ordered",       "unordered", "index", "by"};
 
 const std::unordered_set<std::string> logic_keywords = {"and", "or", "not"};
@@ -44,7 +45,8 @@ std::vector<Token> Tokenizer::Tokenize() const {
         switch (current_state) {
             case State::Base: {
                 if (!current_token.empty()) {
-                    throw std::logic_error("Tokenize error (current_token is not empty in base state)");
+                    throw std::logic_error(
+                        "Tokenize error (current_token is not empty in base state)");
                 }
                 if (isalpha(peek()) || peek() == '_') {
                     current_state = State::WordPrefix;
@@ -83,7 +85,8 @@ std::vector<Token> Tokenizer::Tokenize() const {
             }
             case State::WordPrefix: {
                 if (current_token.empty()) {
-                    throw std::logic_error("Tokenize error (current_token is empty in prefix state)");
+                    throw std::logic_error(
+                        "Tokenize error (current_token is empty in prefix state)");
                 }
                 if (isalpha(peek()) || isdigit(peek()) || peek() == '_' || peek() == '.') {
                     current_token += peek();
@@ -118,7 +121,8 @@ std::vector<Token> Tokenizer::Tokenize() const {
             }
             case State::NumberPrefix: {
                 if (current_token.empty()) {
-                    throw std::logic_error("Tokenize error (current_token is empty in prefix state)");
+                    throw std::logic_error(
+                        "Tokenize error (current_token is empty in prefix state)");
                 }
                 if (isdigit(peek())) {
                     current_token += peek();
@@ -139,7 +143,8 @@ std::vector<Token> Tokenizer::Tokenize() const {
             }
             case State::BytesPrefix: {
                 if (current_token.empty()) {
-                    throw std::logic_error("Tokenize error (current_token is empty in prefix state)");
+                    throw std::logic_error(
+                        "Tokenize error (current_token is empty in prefix state)");
                 }
                 if (isdigit(peek()) ||
                     (isalpha(peek()) && (tolower(peek()) >= 'a' && tolower(peek()) <= 'f'))) {
@@ -157,7 +162,8 @@ std::vector<Token> Tokenizer::Tokenize() const {
             }
             case State::StringPrefix: {
                 if (current_token.empty()) {
-                    throw std::logic_error("Tokenize error (current_token is empty in prefix state)");
+                    throw std::logic_error(
+                        "Tokenize error (current_token is empty in prefix state)");
                 }
                 if (peek() == '"') {
                     current_token += peek();
@@ -196,4 +202,4 @@ std::vector<Token> Tokenizer::Tokenize() const {
         }
     }
     return tokens;
- }
+}

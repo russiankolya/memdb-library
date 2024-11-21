@@ -1,4 +1,5 @@
 #include "Column.h"
+
 #include <set>
 
 const std::string& Column::GetName() const {

@@ -1,8 +1,9 @@
 #include "Row.h"
 
-Row::Row(const std::vector<Column> &scheme) : scheme_(scheme) {}
+Row::Row(const std::vector<Column> &scheme) : scheme_(scheme) {
+}
 
-const std::vector<std::unique_ptr<DataType>>& Row::GetCells() const {
+const std::vector<std::unique_ptr<DataType>> &Row::GetCells() const {
     return cells_;
 }
 

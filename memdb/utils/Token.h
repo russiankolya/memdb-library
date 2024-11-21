@@ -19,6 +19,7 @@ public:
 
     Type GetType() const;
     const std::string& GetValue() const;
+
 private:
     Type type_{};
     std::string value_;

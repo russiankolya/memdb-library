@@ -1,7 +1,9 @@
 #include "DataType.h"
+
 #include <fstream>
 
-DataType::~DataType() noexcept {}
+DataType::~DataType() noexcept {
+}
 
 void DataTypeInt32::Encode(std::ofstream &out) {
     out << value_ << "\n";
@@ -39,7 +41,7 @@ void DataTypeString::Decode(std::ifstream &in) {
 
 void DataTypeBytes::Decode(std::ifstream &in) {
     in >> size_;
-    for (auto& ch : *value_) {
+    for (auto &ch : *value_) {
         in >> ch;
     }
 }

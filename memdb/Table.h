@@ -1,7 +1,8 @@
 #pragma once
+#include <vector>
+
 #include "Column.h"
 #include "Row.h"
-#include <vector>
 
 class Table {
 public:
@@ -10,6 +11,7 @@ public:
 
     void SetScheme(std::vector<Column>&& scheme);
     void AddRow(Row&& row);
+
 private:
     std::vector<Column> scheme_;
     std::vector<Row> rows_;

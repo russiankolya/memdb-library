@@ -1,4 +1,5 @@
 #include "Database.h"
+
 #include <fstream>
 #include <set>
 
@@ -43,7 +44,8 @@ void Database::LoadFromFile(std::ifstream &in) {
 
             std::set<Column::Attribute> attributes;
 
-            for (size_t attribute_index = 0; attribute_index < attributes_count; attribute_index++) {
+            for (size_t attribute_index = 0; attribute_index < attributes_count;
+                 attribute_index++) {
                 size_t attribute;
                 in >> attribute;
                 attributes.insert(static_cast<Column::Attribute>(attribute));
