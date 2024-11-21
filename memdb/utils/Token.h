@@ -15,7 +15,10 @@ public:
         Bytes
     };
 
-    Token(const Type type, const std::string& value) : type_(type), value_(value) {};
+    Token(Type type, const std::string& value);
+
+    Type GetType() const;
+    const std::string& GetValue() const;
 private:
     Type type_{};
     std::string value_;
