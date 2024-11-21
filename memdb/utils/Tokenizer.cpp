@@ -15,7 +15,8 @@ const std::unordered_set<std::string> logic_keywords = {"and", "or", "not"};
 
 const std::unordered_set<std::string> bool_keywords = {"true", "false"};
 
-const std::unordered_set<std::string> operators = {"=", "!=", "<", "<=", ">", ">=", "+", "-", "*", "/", "%", "|"};
+const std::unordered_set<std::string> operators = {
+    "=", "!=", "<", "<=", ">", ">=", "+", "-", "*", "/", "%", "|"};
 
 const std::unordered_set delimiters = {':', ';', ',', '(', ')', '[', ']', '{', '}'};
 
