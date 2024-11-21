@@ -9,14 +9,13 @@ Tokenizer::Tokenizer(std::string&& source) : source_(std::move(source)) {
 const std::unordered_set<std::string> keywords = {
      "create", "table", "unique", "autoincrement", "key", "int32", "bool", "string",
      "bytes", "insert", "to", "select", "from", "where", "update", "set",
-     "delete", "join", "on", "ordered", "unordered", "index", "by"};
+    "delete", "join",   "on",     "ordered",       "unordered", "index", "by"};
 
 const std::unordered_set<std::string> logic_keywords = {"and", "or", "not"};
 
 const std::unordered_set<std::string> bool_keywords = {"true", "false"};
 
-const std::unordered_set<std::string> operators = {"=", "!=", "<", "<=", ">", ">=",
-    "+" , "-", "*", "/", "%", "|"};
+const std::unordered_set<std::string> operators = {"=", "!=", "<", "<=", ">", ">=", "+", "-", "*", "/", "%", "|"};
 
 const std::unordered_set delimiters = {':', ';', ',', '(', ')', '[', ']', '{', '}'};
 
@@ -141,8 +140,8 @@ std::vector<Token> Tokenizer::Tokenize() const {
                 if (current_token.empty()) {
                     throw std::logic_error("Tokenize error (current_token is empty in prefix state)");
                 }
-                if (isdigit(peek()) || (isalpha(peek()) &&
-                    (tolower(peek()) >= 'a' && tolower(peek()) <= 'f'))) {
+                if (isdigit(peek()) ||
+                    (isalpha(peek()) && (tolower(peek()) >= 'a' && tolower(peek()) <= 'f'))) {
                     current_token += peek();
                     advance();
                     break;
