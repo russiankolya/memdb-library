@@ -2,7 +2,7 @@
 #include <set>
 #include <string>
 
-#include "DataType.h"
+#include "Cell.h"
 
 class Column {
 public:
@@ -11,18 +11,21 @@ public:
     enum class Attribute { Unique, Autoincrement, Key };
 
     const std::string& GetName() const;
-    Type GetType() const;
-    const std::unique_ptr<DataType>& GetDefaultValue() const;
+    std::pair<Type, std::optional<size_t>> GetType() const;
+    const std::unique_ptr<Cell>& GetDefaultValue() const;
     const std::set<Attribute>& GetAttributes() const;
 
     void SetName(const std::string&& name);
-    void SetType(const Type type);
-    void SetDefaultValue(std::unique_ptr<DataType>&& default_value);
+    void SetType(Type type);
+    void SetType(Type type, size_t size);
+    void SetDefaultValue(std::unique_ptr<Cell>&& default_value);
     void SetAttributes(std::set<Attribute>&& attributes);
+
+    void AddAttribute(Attribute attribute);
 
 private:
     std::string name_;
-    Type type_{};
-    std::unique_ptr<DataType> default_value_;
+    std::pair<Type, std::optional<size_t>> type_{};
+    std::unique_ptr<Cell> default_value_;
     std::set<Attribute> attributes_;
 };

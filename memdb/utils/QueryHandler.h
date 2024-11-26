@@ -1,12 +1,18 @@
 #pragma once
+#include <map>
 #include <vector>
 
+#include "Table.h"
+#include "Response.h"
 #include "Token.h"
 
 class QueryHandler {
 public:
-    virtual ~QueryHandler() noexcept;
+    explicit QueryHandler(const std::vector<Token>& tokens);
+    virtual ~QueryHandler() noexcept = default;
 
     virtual void Parse() = 0;
-    virtual void Evaluate() = 0;
+    virtual Response Execute(std::map<std::string, std::unique_ptr<Table>> &current_tables) = 0;
+protected:
+    const std::vector<Token>& tokens_;
 };
