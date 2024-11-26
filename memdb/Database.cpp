@@ -1,22 +1,24 @@
 #include "Database.h"
 
-#include "utils/QueryHandler.h"
-#include <utils/Tokenizer.h>
+#include <utils/InsertQueryHandler.h>
 #include <utils/CreateQueryHandler.h>
+#include <utils/Tokenizer.h>
 
 #include <fstream>
 #include <set>
 #include <vector>
 
-std::unique_ptr<Cell> GetPointerByType(Column::Type type) {
+#include "utils/QueryHandler.h"
+
+std::unique_ptr<Cell> GetPointerByType(Cell::Type type) {
     switch (type) {
-        case Column::Type::Int32Type:
+        case Cell::Type::Int32Type:
             return std::make_unique<CellInt32>();
-        case Column::Type::BoolType:
+        case Cell::Type::BoolType:
             return std::make_unique<CellBool>();
-        case Column::Type::StringType:
+        case Cell::Type::StringType:
             return std::make_unique<CellString>();
-        case Column::Type::BytesType:
+        case Cell::Type::BytesType:
             return std::make_unique<CellBytes>();
         default:
             throw std::runtime_error("Unknown column type");
@@ -40,7 +42,7 @@ void Database::LoadFromFile(std::ifstream &in) {
             column.SetName(std::move(column_name));
             size_t type;
             in >> type;
-            column.SetType(static_cast<Column::Type>(type));
+            column.SetType(static_cast<Cell::Type>(type));
             auto default_value = GetPointerByType(column.GetType().first);
             default_value->Decode(in);
             column.SetDefaultValue(std::move(default_value));
@@ -105,6 +107,9 @@ std::unique_ptr<QueryHandler> ChooseQueryHandler(const std::vector<Token> &token
     if (tokens[0].GetValue() == "create") {
         return std::make_unique<CreateQueryHandler>(tokens);
     }
+    if (tokens[0].GetValue() == "insert") {
+        return std::make_unique<InsertQueryHandler>(tokens);
+    }
     return nullptr;
 }
 
@@ -114,7 +119,7 @@ Response Database::Execute(const std::string &query) {
 
     const auto query_handler = ChooseQueryHandler(tokens);
 
-    query_handler->Parse();
+    query_handler->Execute(current_tables_);
 
     return Response{};
 }

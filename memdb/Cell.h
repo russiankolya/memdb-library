@@ -2,10 +2,16 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <optional>
 
 class Cell {
 public:
+    enum class Type { Int32Type, BoolType, StringType, BytesType };
+
     virtual ~Cell() noexcept;
+
+    virtual Type GetType() = 0;
+    virtual std::optional<size_t> GetSize() = 0;
 
     virtual void Encode(std::ofstream& out) = 0;
     virtual void Decode(std::ifstream& in) = 0;
@@ -17,6 +23,8 @@ public:
     explicit CellInt32(int32_t value) noexcept;
 
     int32_t GetValue() const noexcept;
+    Type GetType() override;
+    std::optional<size_t> GetSize() override;
 
     void Encode(std::ofstream& out) override;
     void Decode(std::ifstream& in) override;
@@ -31,6 +39,8 @@ public:
     explicit CellBool(bool value) noexcept;
 
     bool GetValue() const noexcept;
+    Type GetType() override;
+    std::optional<size_t> GetSize() override;
 
     void Encode(std::ofstream& out) override;
     void Decode(std::ifstream& in) override;
@@ -45,6 +55,8 @@ public:
     explicit CellString(const std::string& value) noexcept;
 
     const std::string& GetValue() const noexcept;
+    Type GetType() override;
+    std::optional<size_t> GetSize() override;
 
     void Encode(std::ofstream& out) override;
     void Decode(std::ifstream& in) override;
@@ -59,6 +71,8 @@ public:
     explicit CellBytes(const std::vector<uint8_t>& value) noexcept;
 
     const std::vector<uint8_t>& GetValue() const noexcept;
+    Type GetType() override;
+    std::optional<size_t> GetSize() override;
 
     void Encode(std::ofstream& out) override;
     void Decode(std::ifstream& in) override;

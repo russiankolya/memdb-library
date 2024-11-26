@@ -12,7 +12,6 @@ TEST(CreateQueryHandlerTest, AllTypes) {
     const auto tokens = tokenizer.Tokenize();
 
     CreateQueryHandler handler(tokens);
-    handler.Parse();
     std::map<std::string, std::unique_ptr<Table>> current_tables;
     handler.Execute(current_tables);
 
@@ -20,19 +19,19 @@ TEST(CreateQueryHandlerTest, AllTypes) {
     const auto& table = current_tables.at("t");
 
     ASSERT_EQ(table->GetScheme()[0].GetName(), "a");
-    ASSERT_EQ(table->GetScheme()[0].GetType().first, Column::Type::Int32Type);
+    ASSERT_EQ(table->GetScheme()[0].GetType().first, Cell::Type::Int32Type);
     ASSERT_EQ(table->GetScheme()[0].GetType().second, std::nullopt);
 
     ASSERT_EQ(table->GetScheme()[1].GetName(), "b");
-    ASSERT_EQ(table->GetScheme()[1].GetType().first, Column::Type::BoolType);
+    ASSERT_EQ(table->GetScheme()[1].GetType().first, Cell::Type::BoolType);
     ASSERT_EQ(table->GetScheme()[1].GetType().second, std::nullopt);
 
     ASSERT_EQ(table->GetScheme()[2].GetName(), "c");
-    ASSERT_EQ(table->GetScheme()[2].GetType().first, Column::Type::StringType);
+    ASSERT_EQ(table->GetScheme()[2].GetType().first, Cell::Type::StringType);
     ASSERT_EQ(table->GetScheme()[2].GetType().second, 10);
 
     ASSERT_EQ(table->GetScheme()[3].GetName(), "d");
-    ASSERT_EQ(table->GetScheme()[3].GetType().first, Column::Type::BytesType);
+    ASSERT_EQ(table->GetScheme()[3].GetType().first, Cell::Type::BytesType);
     ASSERT_EQ(table->GetScheme()[3].GetType().second, 1);
 }
 
@@ -44,7 +43,6 @@ TEST(CreateQueryHandlerTest, Attributes) {
     const auto tokens = tokenizer.Tokenize();
 
     CreateQueryHandler handler(tokens);
-    handler.Parse();
     std::map<std::string, std::unique_ptr<Table>> current_tables;
     handler.Execute(current_tables);
 
@@ -66,7 +64,6 @@ TEST(CreateQueryHandlerTest, DefaultValues) {
     const auto tokens = tokenizer.Tokenize();
 
     CreateQueryHandler handler(tokens);
-    handler.Parse();
     std::map<std::string, std::unique_ptr<Table>> current_tables;
     handler.Execute(current_tables);
 
@@ -96,7 +93,6 @@ TEST(CreateQueryHandlerTest, NoAttributes) {
     const auto tokens = tokenizer.Tokenize();
 
     CreateQueryHandler handler(tokens);
-    handler.Parse();
     std::map<std::string, std::unique_ptr<Table>> current_tables;
     handler.Execute(current_tables);
 
@@ -113,7 +109,6 @@ TEST(CreateQueryHandlerTest, Empty) {
     const auto tokens = tokenizer.Tokenize();
 
     CreateQueryHandler handler(tokens);
-    handler.Parse();
     std::map<std::string, std::unique_ptr<Table>> current_tables;
     handler.Execute(current_tables);
 
@@ -130,7 +125,6 @@ TEST(CreateQueryHandlerTest, MultipleColumnNames) {
     const auto tokens = tokenizer.Tokenize();
 
     CreateQueryHandler handler(tokens);
-    handler.Parse();
     std::map<std::string, std::unique_ptr<Table>> current_tables;
     ASSERT_THROW(handler.Execute(current_tables), std::runtime_error);
 }

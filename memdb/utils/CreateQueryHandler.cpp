@@ -19,39 +19,29 @@ Column::Attribute GetAttributeByString(const std::string& name) {
     throw std::runtime_error("Unknown attribute name");
 }
 
-Column::Type GetTypeByString(const std::string& name) {
+Cell::Type GetTypeByString(const std::string& name) {
     if (name == "int32") {
-        return Column::Type::Int32Type;
+        return Cell::Type::Int32Type;
     }
     if (name == "bool") {
-        return Column::Type::BoolType;
+        return Cell::Type::BoolType;
     }
     if (name == "string") {
-        return Column::Type::StringType;
+        return Cell::Type::StringType;
     }
     if (name == "bytes") {
-        return Column::Type::BytesType;
+        return Cell::Type::BytesType;
     }
     throw std::runtime_error("Unknown type name");
 }
 
-std::vector<uint8_t> HexStringToVector(const std::string& hex_string) {
-    std::vector<uint8_t> result;
-    std::stringstream ss(hex_string.substr(2));
-    unsigned int value;
-    while (ss >> std::hex >> value) {
-        result.push_back(static_cast<uint8_t>(value));
-    }
-    return result;
-}
-
 std::unique_ptr<Cell> GetDefaultValueByString(
-    const std::pair<Column::Type, std::optional<size_t>>& type, const std::string& value) {
+    const std::pair<Cell::Type, std::optional<size_t>>& type, const std::string& value) {
     switch (type.first) {
-        case Column::Type::Int32Type: {
+        case Cell::Type::Int32Type: {
             return std::make_unique<CellInt32>(std::stoi(value));
         }
-        case Column::Type::BoolType: {
+        case Cell::Type::BoolType: {
             if (value == "true") {
                 return std::make_unique<CellBool>(true);
             }
@@ -60,14 +50,14 @@ std::unique_ptr<Cell> GetDefaultValueByString(
             }
             throw std::runtime_error("Unknown value for bool type");
         }
-        case Column::Type::StringType: {
+        case Cell::Type::StringType: {
             if (value.size() > type.second) {
                 throw std::runtime_error("Invalid value for string type");
             }
             return std::make_unique<CellString>(value);
         }
-        case Column::Type::BytesType: {
-            const std::vector<uint8_t>& bytes = HexStringToVector(value);
+        case Cell::Type::BytesType: {
+            const std::vector<uint8_t>& bytes = QueryHandler::HexStringToVector(value);
             if (bytes.size() > type.second) {
                 throw std::runtime_error("Invalid value for bytes type");
             }
@@ -195,13 +185,13 @@ void CreateQueryHandler::Parse() {
                     peek().GetType() != Token::Type::Bytes) {
                     throw std::runtime_error("Query does not match expected format");
                 }
-                if ((column_type == Column::Type::Int32Type &&
+                if ((column_type == Cell::Type::Int32Type &&
                      peek().GetType() != Token::Type::Number) ||
-                    (column_type == Column::Type::BoolType &&
+                    (column_type == Cell::Type::BoolType &&
                      peek().GetType() != Token::Type::Bool) ||
-                    (column_type == Column::Type::StringType &&
+                    (column_type == Cell::Type::StringType &&
                      peek().GetType() != Token::Type::String) ||
-                    (column_type == Column::Type::BytesType &&
+                    (column_type == Cell::Type::BytesType &&
                      peek().GetType() != Token::Type::Bytes)) {
                     throw std::runtime_error("Default value and type do not match");
                 }
@@ -226,6 +216,8 @@ void CreateQueryHandler::Parse() {
 
 Response CreateQueryHandler::Execute(
     std::map<std::string, std::unique_ptr<Table>>& current_tables) {
+    Parse();
+
     if (current_tables.contains(table_name_)) {
         throw std::runtime_error("Table already exists");
     }

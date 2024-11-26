@@ -6,7 +6,7 @@ const std::string& Column::GetName() const {
     return name_;
 }
 
-std::pair<Column::Type, std::optional<size_t>> Column::GetType() const {
+std::pair<Cell::Type, std::optional<size_t>> Column::GetType() const {
     return type_;
 }
 
@@ -22,11 +22,11 @@ void Column::SetName(const std::string&& name) {
     name_ = std::move(name);
 }
 
-void Column::SetType(const Type type) {
+void Column::SetType(const Cell::Type type) {
     type_.first = type;
 }
 
-void Column::SetType(Type type, size_t size) {
+void Column::SetType(Cell::Type type, size_t size) {
     type_ = {type, size};
 }
 
