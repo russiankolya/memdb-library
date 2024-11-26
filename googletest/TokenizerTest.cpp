@@ -6,11 +6,12 @@
 TEST(TokenizerTest, Create) {
     std::string query =
         "cReAte table users ({key, autoincrement} id :\n\t"
-        "int32, {unique} login: string[32], password_hash: bytes[8], is_admin:\n"
+        "int32, {unique} login: string[32] = \"default_string\", password_hash: bytes[8], "
+        "is_admin:\n"
         "bool = FALSE)";
     const Tokenizer tokenizer(std::move(query));
     const auto tokens = tokenizer.Tokenize();
-    ASSERT_EQ(tokens.size(), 36);
+    ASSERT_EQ(tokens.size(), 38);
     const std::vector expected_tokens = {
         Token(Token::Type::Keyword, "create"),      Token(Token::Type::Keyword, "table"),
         Token(Token::Type::Identifier, "users"),    Token(Token::Type::Delimiter, "("),
@@ -23,6 +24,7 @@ TEST(TokenizerTest, Create) {
         Token(Token::Type::Identifier, "login"),    Token(Token::Type::Delimiter, ":"),
         Token(Token::Type::Keyword, "string"),      Token(Token::Type::Delimiter, "["),
         Token(Token::Type::Number, "32"),           Token(Token::Type::Delimiter, "]"),
+        Token(Token::Type::Operator, "="),          Token(Token::Type::String, "default_string"),
         Token(Token::Type::Delimiter, ","),         Token(Token::Type::Identifier, "password_hash"),
         Token(Token::Type::Delimiter, ":"),         Token(Token::Type::Keyword, "bytes"),
         Token(Token::Type::Delimiter, "["),         Token(Token::Type::Number, "8"),
@@ -37,13 +39,13 @@ TEST(TokenizerTest, Create) {
 }
 
 TEST(TokenizerTest, Insert) {
-    std::string query = "insert (,\"vasya\", 0xdeadbeefdeadbeef) to users";
+    std::string query = "insert (,\"vasya\n\", 0xdeadbeefdeadbeef) to users";
     const Tokenizer tokenizer(std::move(query));
     const auto tokens = tokenizer.Tokenize();
     ASSERT_EQ(tokens.size(), 9);
     const std::vector expected_tokens = {
         Token(Token::Type::Keyword, "insert"),  Token(Token::Type::Delimiter, "("),
-        Token(Token::Type::Delimiter, ","),     Token(Token::Type::String, "\"vasya\""),
+        Token(Token::Type::Delimiter, ","),     Token(Token::Type::String, "vasya\n"),
         Token(Token::Type::Delimiter, ","),     Token(Token::Type::Bytes, "0xdeadbeefdeadbeef"),
         Token(Token::Type::Delimiter, ")"),     Token(Token::Type::Keyword, "to"),
         Token(Token::Type::Identifier, "users")};
@@ -54,17 +56,20 @@ TEST(TokenizerTest, Insert) {
 }
 
 TEST(TokenizerTest, Select) {
-    std::string query = "select id, loGin from users where is_admin OR id < 10";
+    std::string query = "select id, loGin from users where is_admin OR (id < 10 AND id >= 5)";
     const Tokenizer tokenizer(std::move(query));
     const auto tokens = tokenizer.Tokenize();
-    ASSERT_EQ(tokens.size(), 12);
+    ASSERT_EQ(tokens.size(), 18);
     const std::vector expected_tokens = {
         Token(Token::Type::Keyword, "select"),  Token(Token::Type::Identifier, "id"),
         Token(Token::Type::Delimiter, ","),     Token(Token::Type::Identifier, "loGin"),
         Token(Token::Type::Keyword, "from"),    Token(Token::Type::Identifier, "users"),
         Token(Token::Type::Keyword, "where"),   Token(Token::Type::Identifier, "is_admin"),
-        Token(Token::Type::LogicKeyword, "or"), Token(Token::Type::Identifier, "id"),
-        Token(Token::Type::Operator, "<"),      Token(Token::Type::Number, "10")};
+        Token(Token::Type::LogicKeyword, "or"), Token(Token::Type::Delimiter, "("),
+        Token(Token::Type::Identifier, "id"),   Token(Token::Type::Operator, "<"),
+        Token(Token::Type::Number, "10"),       Token(Token::Type::LogicKeyword, "and"),
+        Token(Token::Type::Identifier, "id"),   Token(Token::Type::Operator, ">="),
+        Token(Token::Type::Number, "5"),        Token(Token::Type::Delimiter, ")")};
     for (size_t i = 0; i < tokens.size(); ++i) {
         ASSERT_EQ(tokens[i].GetType(), expected_tokens[i].GetType());
         ASSERT_EQ(tokens[i].GetValue(), expected_tokens[i].GetValue());
@@ -81,7 +86,7 @@ TEST(TokenizerTest, Update) {
         Token(Token::Type::Keyword, "set"),    Token(Token::Type::Identifier, "is_admin"),
         Token(Token::Type::Operator, "="),     Token(Token::Type::Bool, "true"),
         Token(Token::Type::Keyword, "where"),  Token(Token::Type::Identifier, "login"),
-        Token(Token::Type::Operator, "="),     Token(Token::Type::String, "\"vasya\"")};
+        Token(Token::Type::Operator, "="),     Token(Token::Type::String, "vasya")};
     for (size_t i = 0; i < tokens.size(); ++i) {
         ASSERT_EQ(tokens[i].GetType(), expected_tokens[i].GetType());
         ASSERT_EQ(tokens[i].GetValue(), expected_tokens[i].GetValue());
@@ -158,4 +163,11 @@ TEST(TokenizerTest, CreateUnorderedIndex) {
         ASSERT_EQ(tokens[i].GetType(), expected_tokens[i].GetType());
         ASSERT_EQ(tokens[i].GetValue(), expected_tokens[i].GetValue());
     }
+}
+
+TEST(TokenizerTest, Empty) {
+    std::string query = "   \n";
+    const Tokenizer tokenizer(std::move(query));
+    const auto tokens = tokenizer.Tokenize();
+    ASSERT_EQ(tokens.size(), 0);
 }

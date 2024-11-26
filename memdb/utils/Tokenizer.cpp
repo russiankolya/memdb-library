@@ -3,9 +3,7 @@
 #include <unordered_set>
 #include <vector>
 
-Tokenizer::Tokenizer(std::string&& source) : source_(std::move(source)) {
-    source_ += " ";
-}
+Tokenizer::Tokenizer(const std::string& source) : source_(source) {}
 
 const std::unordered_set<std::string> keywords = {
     "create", "table",  "unique", "autoincrement", "key",       "int32", "bool",   "string",
@@ -23,20 +21,23 @@ const std::unordered_set delimiters = {':', ';', ',', '(', ')', '[', ']', '{', '
 
 std::vector<Token> Tokenizer::Tokenize() const {
     std::vector<Token> tokens;
-    State current_state = State::Base;
+    auto current_state = State::Base;
     size_t current_pos = 0;
     std::string current_token;
 
     auto advance = [&] {
         ++current_pos;
-        if (current_pos >= source_.size()) {
+        if (current_pos > source_.size()) {
             current_state = State::End;
         }
     };
 
     auto peek = [&] {
-        if (current_pos >= source_.size()) {
+        if (current_pos > source_.size()) {
             throw std::out_of_range("Tokenizer is out of range");
+        }
+        if (current_pos == source_.size()) {
+            return ' ';
         }
         return source_[current_pos];
     };
@@ -62,7 +63,6 @@ std::vector<Token> Tokenizer::Tokenize() const {
                 }
                 if (peek() == '"') {
                     current_state = State::StringPrefix;
-                    current_token += peek();
                     advance();
                     break;
                 }
@@ -161,12 +161,7 @@ std::vector<Token> Tokenizer::Tokenize() const {
                 break;
             }
             case State::StringPrefix: {
-                if (current_token.empty()) {
-                    throw std::logic_error(
-                        "Tokenize error (current_token is empty in prefix state)");
-                }
                 if (peek() == '"') {
-                    current_token += peek();
                     tokens.emplace_back(Token(Token::Type::String, current_token));
                     current_token.clear();
                     advance();
