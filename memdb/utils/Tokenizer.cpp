@@ -3,7 +3,8 @@
 #include <unordered_set>
 #include <vector>
 
-Tokenizer::Tokenizer(const std::string& source) : source_(source) {}
+Tokenizer::Tokenizer(const std::string& source) : source_(source) {
+}
 
 const std::unordered_set<std::string> keywords = {
     "create", "table",  "unique", "autoincrement", "key",       "int32", "bool",   "string",
