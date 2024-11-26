@@ -1,8 +1,8 @@
 #pragma once
 #include <cstdint>
 #include <memory>
-#include <string>
 #include <optional>
+#include <string>
 
 class Cell {
 public:
