@@ -3,7 +3,7 @@
 
 class Tokenizer {
 public:
-    explicit Tokenizer(std::string&& source);
+    explicit Tokenizer(const std::string& source);
 
     std::vector<Token> Tokenize() const;
 
@@ -18,5 +18,5 @@ private:
         End
     };
 
-    std::string source_;
+    const std::string& source_;
 };
