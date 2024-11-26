@@ -1,5 +1,7 @@
 #include "Table.h"
 
+#include <iostream>
+
 const std::vector<Column>& Table::GetScheme() const {
     return scheme_;
 }

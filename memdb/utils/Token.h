@@ -6,9 +6,9 @@ public:
     enum class Type {
         Keyword,
         LogicKeyword,
+        Identifier,
         Operator,
         Delimiter,
-        Identifier,
         Number,
         Bool,
         String,
