@@ -14,11 +14,31 @@ CellBool::CellBool(const bool value) noexcept : value_(value) {
 }
 
 CellString::CellString(const std::string &value) noexcept
-    : value_(std::make_unique<std::string>(value)) {
+    : value_(std::make_shared<std::string>(value)) {
 }
 
 CellBytes::CellBytes(const std::vector<uint8_t> &value) noexcept
-    : value_(std::make_unique<std::vector<uint8_t>>(value)) {
+    : value_(std::make_shared<std::vector<uint8_t>>(value)) {
+}
+
+CellString::CellString(const std::shared_ptr<std::string> &value) : value_(value) {}
+
+CellBytes::CellBytes(const std::shared_ptr<std::vector<uint8_t>> &value) : value_(value) {}
+
+std::unique_ptr<Cell> CellInt32::Clone() const {
+    return std::make_unique<CellInt32>(value_);
+}
+
+std::unique_ptr<Cell> CellBool::Clone() const {
+    return std::make_unique<CellBool>(value_);
+}
+
+std::unique_ptr<Cell> CellString::Clone() const {
+    return std::make_unique<CellString>(value_);
+}
+
+std::unique_ptr<Cell> CellBytes::Clone() const {
+    return std::make_unique<CellBytes>(value_);
 }
 
 int32_t CellInt32::GetValue() const noexcept {
@@ -38,19 +58,19 @@ const std::vector<uint8_t> &CellBytes::GetValue() const noexcept {
 }
 
 Cell::Type CellInt32::GetType() {
-    return Cell::Type::Int32Type;
+    return Type::Int32Type;
 }
 
 Cell::Type CellBool::GetType() {
-    return Cell::Type::BoolType;
+    return Type::BoolType;
 }
 
 Cell::Type CellString::GetType() {
-    return Cell::Type::StringType;
+    return Type::StringType;
 }
 
 Cell::Type CellBytes::GetType() {
-    return Cell::Type::BytesType;
+    return Type::BytesType;
 }
 
 std::optional<size_t> CellInt32::GetSize() {

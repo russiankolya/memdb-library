@@ -2,7 +2,6 @@
 #include <vector>
 
 #include "Column.h"
-#include "Cell.h"
 
 class Row {
 public:

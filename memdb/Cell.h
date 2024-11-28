@@ -10,6 +10,8 @@ public:
 
     virtual ~Cell() noexcept;
 
+    virtual std::unique_ptr<Cell> Clone() const = 0;
+
     virtual Type GetType() = 0;
     virtual std::optional<size_t> GetSize() = 0;
 
@@ -21,6 +23,8 @@ class CellInt32 final : public Cell {
 public:
     CellInt32() noexcept = default;
     explicit CellInt32(int32_t value) noexcept;
+
+    std::unique_ptr<Cell> Clone() const override;
 
     int32_t GetValue() const noexcept;
     Type GetType() override;
@@ -38,6 +42,8 @@ public:
     CellBool() noexcept = default;
     explicit CellBool(bool value) noexcept;
 
+    std::unique_ptr<Cell> Clone() const override;
+
     bool GetValue() const noexcept;
     Type GetType() override;
     std::optional<size_t> GetSize() override;
@@ -53,6 +59,9 @@ class CellString final : public Cell {
 public:
     CellString() noexcept = default;
     explicit CellString(const std::string& value) noexcept;
+    explicit CellString(const std::shared_ptr<std::string>& value);
+
+    std::unique_ptr<Cell> Clone() const override;
 
     const std::string& GetValue() const noexcept;
     Type GetType() override;
@@ -62,13 +71,16 @@ public:
     void Decode(std::ifstream& in) override;
 
 private:
-    std::unique_ptr<std::string> value_;
+    std::shared_ptr<std::string> value_;
 };
 
 class CellBytes final : public Cell {
 public:
     CellBytes() noexcept = default;
     explicit CellBytes(const std::vector<uint8_t>& value) noexcept;
+    explicit CellBytes(const std::shared_ptr<std::vector<uint8_t>>& value);
+
+    std::unique_ptr<Cell> Clone() const override;
 
     const std::vector<uint8_t>& GetValue() const noexcept;
     Type GetType() override;
@@ -78,5 +90,5 @@ public:
     void Decode(std::ifstream& in) override;
 
 private:
-    std::unique_ptr<std::vector<uint8_t>> value_;
+    std::shared_ptr<std::vector<uint8_t>> value_;
 };

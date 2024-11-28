@@ -61,7 +61,7 @@ void InsertQueryHandler::Parse() {
             if (tokens_[i + 1].GetValue() != "=") {
                 throw std::runtime_error("Query does not match expected format");
             }
-            if (tokens_[i + 3].GetValue() != ",") {
+            if (tokens_[i + 3].GetValue() != "," && tokens_[i + 3].GetValue() != ")") {
                 throw std::runtime_error("Query does not match expected format");
             }
             value_by_column_name[tokens_[i].GetValue()] = GetValueByToken(tokens_[i + 2]);
@@ -77,6 +77,9 @@ void InsertQueryHandler::Parse() {
                 values.push_back(GetValueByToken(tokens_[i]));
                 ++i;
             }
+        }
+        if (tokens_[tokens_.size() - 4].GetValue() == ",") {
+            values.push_back(nullptr);
         }
         parsed_row_ = std::move(values);
     }
@@ -98,7 +101,15 @@ Response InsertQueryHandler::Execute(
         if (scheme.size() != parsed_row.size()) {
             throw std::runtime_error("Values do not match scheme");
         }
+        std::vector<std::unique_ptr<Cell>> cells(scheme.size());
         for (size_t i = 0; i < scheme.size(); ++i) {
+            if (parsed_row[i] == nullptr) {
+                if (scheme[i].GetDefaultValue() == nullptr) {
+                    throw std::runtime_error("No default for missing value");
+                }
+                cells[i] = scheme[i].GetDefaultValue()->Clone();
+                continue;
+            }
             if (parsed_row[i]->GetType() != scheme[i].GetType().first) {
                 throw std::runtime_error("Values do not match scheme");
             }
@@ -108,9 +119,10 @@ Response InsertQueryHandler::Execute(
                     throw std::runtime_error("Values do not match scheme");
                 }
             }
+            cells[i] = std::move(std::get<std::vector<std::unique_ptr<Cell>>>(parsed_row_)[i]);
         }
         Row row(scheme);
-        row.SetCells(std::move(std::get<std::vector<std::unique_ptr<Cell>>>(parsed_row_)));
+        row.SetCells(std::move(cells));
         table->AddRow(std::move(row));
     } else {
         const auto& parsed_map =
@@ -135,11 +147,17 @@ Response InsertQueryHandler::Execute(
         }
         std::vector<std::unique_ptr<Cell>> cells(scheme.size());
         for (size_t i = 0; i < scheme.size(); ++i) {
-            const auto& column_name = scheme[i].GetName();
-            if (parsed_map.contains(column_name)) {
-                cells[i] = std::move(std::get<std::map<std::string, std::unique_ptr<Cell>>>(parsed_row_).at(column_name));
+            if (const auto& column_name = scheme[i].GetName(); parsed_map.contains(column_name)) {
+                cells[i] =
+                    std::move(std::get<std::map<std::string, std::unique_ptr<Cell>>>(parsed_row_)
+                                  .at(column_name));
+            } else {
+                cells[i] = scheme[i].GetDefaultValue()->Clone();
             }
         }
+        Row row(scheme);
+        row.SetCells(std::move(cells));
+        table->AddRow(std::move(row));
     }
     return Response();
 }
