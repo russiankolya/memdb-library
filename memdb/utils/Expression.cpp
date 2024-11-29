@@ -112,7 +112,8 @@ std::variant<int32_t, bool, std::string, std::vector<uint8_t>> GetValueByToken(c
 
 std::variant<int32_t, bool, std::string, std::vector<uint8_t>> Expression::Calc(
     const Row& row) const {
-    std::map<std::string, std::variant<int32_t, bool, std::string, std::vector<uint8_t>>> value_by_identifier;
+    std::map<std::string, std::variant<int32_t, bool, std::string, std::vector<uint8_t>>>
+        value_by_identifier;
     for (size_t i = 0; i < row.GetScheme().size(); i++) {
         value_by_identifier[row.GetScheme()[i].GetName()] = row.GetCells()[i]->GetValue();
     }
@@ -218,22 +219,28 @@ std::variant<int32_t, bool, std::string, std::vector<uint8_t>> Expression::Calc(
             }
             if (value == "+" || value == "-" || value == "*" || value == "/" || value == "%") {
                 if (!std::holds_alternative<int32_t>(top_value)) {
-                    throw std::runtime_error("Trying to apply arithmetic operator for non-integer value");
+                    throw std::runtime_error(
+                        "Trying to apply arithmetic operator for non-integer value");
                 }
                 if (value == "+") {
-                    calculation_stack.push(std::get<int32_t>(top_value) + std::get<int32_t>(second_top_value));
+                    calculation_stack.push(std::get<int32_t>(top_value) +
+                                           std::get<int32_t>(second_top_value));
                 }
                 if (value == "-") {
-                    calculation_stack.push(std::get<int32_t>(top_value) - std::get<int32_t>(second_top_value));
+                    calculation_stack.push(std::get<int32_t>(top_value) -
+                                           std::get<int32_t>(second_top_value));
                 }
                 if (value == "*") {
-                    calculation_stack.push(std::get<int32_t>(top_value) * std::get<int32_t>(second_top_value));
+                    calculation_stack.push(std::get<int32_t>(top_value) *
+                                           std::get<int32_t>(second_top_value));
                 }
                 if (value == "/") {
-                    calculation_stack.push(std::get<int32_t>(top_value) / std::get<int32_t>(second_top_value));
+                    calculation_stack.push(std::get<int32_t>(top_value) /
+                                           std::get<int32_t>(second_top_value));
                 }
                 if (value == "%") {
-                    calculation_stack.push(std::get<int32_t>(top_value) % std::get<int32_t>(second_top_value));
+                    calculation_stack.push(std::get<int32_t>(top_value) %
+                                           std::get<int32_t>(second_top_value));
                 }
             }
         }

@@ -78,10 +78,12 @@ TEST(CreateQueryHandlerTest, DefaultValues) {
     const auto bool_value = std::get<bool>(table->GetScheme()[1].GetDefaultValue()->GetValue());
     ASSERT_EQ(bool_value, false);
 
-    const auto string_value = std::get<std::string>(table->GetScheme()[2].GetDefaultValue()->GetValue());
+    const auto string_value =
+        std::get<std::string>(table->GetScheme()[2].GetDefaultValue()->GetValue());
     ASSERT_EQ(string_value, "52");
 
-    const auto bytes_value = std::get<std::vector<uint8_t>>(table->GetScheme()[3].GetDefaultValue()->GetValue());
+    const auto bytes_value =
+        std::get<std::vector<uint8_t>>(table->GetScheme()[3].GetDefaultValue()->GetValue());
     ASSERT_EQ(bytes_value.size(), 1);
     ASSERT_EQ(bytes_value[0], 82);
 }
