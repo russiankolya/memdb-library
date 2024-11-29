@@ -84,6 +84,9 @@ Expression::Expression(const std::vector<Token>& tokens) {
         }
     }
     while (!operators.empty()) {
+        if (operators.top().GetType() != Token::Type::Operator && operators.top().GetType() != Token::Type::LogicKeyword && operators.top().GetValue() != "|") {
+            throw std::runtime_error("Parentheses are wrong");
+        }
         expression_.push_back(operators.top());
         operators.pop();
     }
@@ -124,9 +127,11 @@ std::variant<int32_t, bool, std::string, std::vector<uint8_t>> Expression::Calc(
         if (type == Token::Type::Number || type == Token::Type::Bool ||
             type == Token::Type::String || type == Token::Type::Bytes) {
             calculation_stack.push(GetValueByToken(token));
+            continue;
         }
         if (type == Token::Type::Identifier) {
             calculation_stack.push(value_by_identifier[value]);
+            continue;
         }
         if (type == Token::Type::Delimiter) {
             if (value == "|") {
@@ -148,6 +153,7 @@ std::variant<int32_t, bool, std::string, std::vector<uint8_t>> Expression::Calc(
             } else {
                 throw std::runtime_error("Unexpected delimiter in expression");
             }
+            continue;
         }
         if (type == Token::Type::LogicKeyword) {
             if (calculation_stack.empty()) {
@@ -178,6 +184,7 @@ std::variant<int32_t, bool, std::string, std::vector<uint8_t>> Expression::Calc(
                     calculation_stack.push(top_value || second_top_value);
                 }
             }
+            continue;
         }
         if (type == Token::Type::Operator) {
             const auto second_top_value = calculation_stack.top();
@@ -243,7 +250,9 @@ std::variant<int32_t, bool, std::string, std::vector<uint8_t>> Expression::Calc(
                                            std::get<int32_t>(second_top_value));
                 }
             }
+            continue;
         }
+        throw std::runtime_error("Unrecognised symbol in operators list");
     }
     if (calculation_stack.size() != 1) {
         throw std::runtime_error("Unexpected error in expression calculation");
