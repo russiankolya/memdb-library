@@ -72,18 +72,18 @@ TEST(CreateQueryHandlerTest, DefaultValues) {
 
     ASSERT_EQ(table->GetScheme().size(), 4);
 
-    const auto& int32_value = static_cast<CellInt32&>(*table->GetScheme()[0].GetDefaultValue());
-    ASSERT_EQ(int32_value.GetValue(), 52);
+    const auto int32_value = std::get<int32_t>(table->GetScheme()[0].GetDefaultValue()->GetValue());
+    ASSERT_EQ(int32_value, 52);
 
-    const auto& bool_value = static_cast<CellBool&>(*table->GetScheme()[1].GetDefaultValue());
-    ASSERT_EQ(bool_value.GetValue(), false);
+    const auto bool_value = std::get<bool>(table->GetScheme()[1].GetDefaultValue()->GetValue());
+    ASSERT_EQ(bool_value, false);
 
-    const auto& string_value = static_cast<CellString&>(*table->GetScheme()[2].GetDefaultValue());
-    ASSERT_EQ(string_value.GetValue(), "52");
+    const auto string_value = std::get<std::string>(table->GetScheme()[2].GetDefaultValue()->GetValue());
+    ASSERT_EQ(string_value, "52");
 
-    const auto& bytes_value = static_cast<CellBytes&>(*table->GetScheme()[3].GetDefaultValue());
-    ASSERT_EQ(bytes_value.GetValue().size(), 1);
-    ASSERT_EQ(bytes_value.GetValue()[0], 82);
+    const auto bytes_value = std::get<std::vector<uint8_t>>(table->GetScheme()[3].GetDefaultValue()->GetValue());
+    ASSERT_EQ(bytes_value.size(), 1);
+    ASSERT_EQ(bytes_value[0], 82);
 }
 
 TEST(CreateQueryHandlerTest, NoAttributes) {

@@ -6,7 +6,7 @@
 InsertQueryHandler::InsertQueryHandler(const std::vector<Token>& tokens) : QueryHandler(tokens) {
 }
 
-std::unique_ptr<Cell> GetValueByToken(const Token& token) {
+std::unique_ptr<Cell> GetValuePointerByToken(const Token& token) {
     switch (token.GetType()) {
         case Token::Type::Number: {
             return std::make_unique<CellInt32>(std::stoi(token.GetValue()));
@@ -64,7 +64,7 @@ void InsertQueryHandler::Parse() {
             if (tokens_[i + 3].GetValue() != "," && tokens_[i + 3].GetValue() != ")") {
                 throw std::runtime_error("Query does not match expected format");
             }
-            value_by_column_name[tokens_[i].GetValue()] = GetValueByToken(tokens_[i + 2]);
+            value_by_column_name[tokens_[i].GetValue()] = GetValuePointerByToken(tokens_[i + 2]);
             i = i + 3;
         }
         parsed_row_ = std::move(value_by_column_name);
@@ -74,7 +74,7 @@ void InsertQueryHandler::Parse() {
             if (tokens_[i].GetValue() == ",") {
                 values.push_back(nullptr);
             } else {
-                values.push_back(GetValueByToken(tokens_[i]));
+                values.push_back(GetValuePointerByToken(tokens_[i]));
                 ++i;
             }
         }

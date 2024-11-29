@@ -41,19 +41,19 @@ std::unique_ptr<Cell> CellBytes::Clone() const {
     return std::make_unique<CellBytes>(value_);
 }
 
-int32_t CellInt32::GetValue() const noexcept {
+std::variant<int32_t, bool, std::string, std::vector<uint8_t>> CellInt32::GetValue() const {
     return value_;
 }
 
-bool CellBool::GetValue() const noexcept {
+std::variant<int32_t, bool, std::string, std::vector<uint8_t>> CellBool::GetValue() const {
     return value_;
 }
 
-const std::string &CellString::GetValue() const noexcept {
+std::variant<int32_t, bool, std::string, std::vector<uint8_t>> CellString::GetValue() const {
     return *value_;
 }
 
-const std::vector<uint8_t> &CellBytes::GetValue() const noexcept {
+std::variant<int32_t, bool, std::string, std::vector<uint8_t>> CellBytes::GetValue() const {
     return *value_;
 }
 

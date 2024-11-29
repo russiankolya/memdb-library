@@ -3,6 +3,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 
 class Cell {
 public:
@@ -11,6 +12,8 @@ public:
     virtual ~Cell() noexcept;
 
     virtual std::unique_ptr<Cell> Clone() const = 0;
+
+    virtual std::variant<int32_t, bool, std::string, std::vector<uint8_t>> GetValue() const = 0;
 
     virtual Type GetType() = 0;
     virtual std::optional<size_t> GetSize() = 0;
@@ -26,7 +29,8 @@ public:
 
     std::unique_ptr<Cell> Clone() const override;
 
-    int32_t GetValue() const noexcept;
+    std::variant<int32_t, bool, std::string, std::vector<uint8_t>> GetValue() const override;
+
     Type GetType() override;
     std::optional<size_t> GetSize() override;
 
@@ -44,7 +48,8 @@ public:
 
     std::unique_ptr<Cell> Clone() const override;
 
-    bool GetValue() const noexcept;
+    std::variant<int32_t, bool, std::string, std::vector<uint8_t>> GetValue() const override;
+
     Type GetType() override;
     std::optional<size_t> GetSize() override;
 
@@ -63,7 +68,8 @@ public:
 
     std::unique_ptr<Cell> Clone() const override;
 
-    const std::string& GetValue() const noexcept;
+    std::variant<int32_t, bool, std::string, std::vector<uint8_t>> GetValue() const override;
+
     Type GetType() override;
     std::optional<size_t> GetSize() override;
 
@@ -82,7 +88,8 @@ public:
 
     std::unique_ptr<Cell> Clone() const override;
 
-    const std::vector<uint8_t>& GetValue() const noexcept;
+    std::variant<int32_t, bool, std::string, std::vector<uint8_t>> GetValue() const override;
+
     Type GetType() override;
     std::optional<size_t> GetSize() override;
 

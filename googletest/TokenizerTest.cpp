@@ -100,8 +100,8 @@ TEST(TokenizerTest, Delete) {
     ASSERT_EQ(tokens.size(), 10);
     const std::vector expected_tokens = {
         Token(Token::Type::Keyword, "delete"),   Token(Token::Type::Identifier, "users"),
-        Token(Token::Type::Keyword, "where"),    Token(Token::Type::Operator, "|"),
-        Token(Token::Type::Identifier, "login"), Token(Token::Type::Operator, "|"),
+        Token(Token::Type::Keyword, "where"),    Token(Token::Type::Delimiter, "|"),
+        Token(Token::Type::Identifier, "login"), Token(Token::Type::Delimiter, "|"),
         Token(Token::Type::Operator, "%"),       Token(Token::Type::Number, "2"),
         Token(Token::Type::Operator, "="),       Token(Token::Type::Number, "0")};
     for (size_t i = 0; i < tokens.size(); ++i) {

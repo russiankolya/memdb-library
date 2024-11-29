@@ -23,14 +23,14 @@ TEST(InsertQueryHandlerTest, AllValuesEqualSign) {
     const auto& table = current_tables.at("t");
     ASSERT_EQ(table->GetRows().size(), 1);
 
-    const auto& string_value = static_cast<CellString&>(*table->GetRows()[0].GetCells()[0]);
-    ASSERT_EQ(string_value.GetValue(), "vasya");
+    const auto string_value = std::get<std::string>(table->GetRows()[0].GetCells()[0]->GetValue());
+    ASSERT_EQ(string_value, "vasya");
 
-    const auto& int32_value = static_cast<CellInt32&>(*table->GetRows()[0].GetCells()[1]);
-    ASSERT_EQ(int32_value.GetValue(), 123);
+    const auto int32_value = std::get<int32_t>(table->GetRows()[0].GetCells()[1]->GetValue());
+    ASSERT_EQ(int32_value, 123);
 
-    const auto& bool_value = static_cast<CellBool&>(*table->GetRows()[0].GetCells()[2]);
-    ASSERT_EQ(bool_value.GetValue(), true);
+    const auto bool_value = std::get<bool>(table->GetRows()[0].GetCells()[2]->GetValue());
+    ASSERT_EQ(bool_value, true);
 }
 
 TEST(InsertQueryHandlerTest, MissingValuesEqualSign) {
@@ -52,14 +52,14 @@ TEST(InsertQueryHandlerTest, MissingValuesEqualSign) {
     const auto& table = current_tables.at("t");
     ASSERT_EQ(table->GetRows().size(), 1);
 
-    const auto& string_value = static_cast<CellString&>(*table->GetRows()[0].GetCells()[0]);
-    ASSERT_EQ(string_value.GetValue(), "vasya");
+    const auto string_value = std::get<std::string>(table->GetRows()[0].GetCells()[0]->GetValue());
+    ASSERT_EQ(string_value, "vasya");
 
-    const auto& int32_value = static_cast<CellInt32&>(*table->GetRows()[0].GetCells()[1]);
-    ASSERT_EQ(int32_value.GetValue(), 52);
+    const auto int32_value = std::get<int32_t>(table->GetRows()[0].GetCells()[1]->GetValue());
+    ASSERT_EQ(int32_value, 52);
 
-    const auto& bool_value = static_cast<CellBool&>(*table->GetRows()[0].GetCells()[2]);
-    ASSERT_EQ(bool_value.GetValue(), true);
+    const auto bool_value = std::get<bool>(table->GetRows()[0].GetCells()[2]->GetValue());
+    ASSERT_EQ(bool_value, true);
 }
 
 TEST(InsertQueryHandlerTest, AllValuesNoEqualSign) {
@@ -81,14 +81,14 @@ TEST(InsertQueryHandlerTest, AllValuesNoEqualSign) {
     const auto& table = current_tables.at("t");
     ASSERT_EQ(table->GetRows().size(), 1);
 
-    const auto& string_value = static_cast<CellString&>(*table->GetRows()[0].GetCells()[0]);
-    ASSERT_EQ(string_value.GetValue(), "vasya");
+    const auto string_value = std::get<std::string>(table->GetRows()[0].GetCells()[0]->GetValue());
+    ASSERT_EQ(string_value, "vasya");
 
-    const auto& int32_value = static_cast<CellInt32&>(*table->GetRows()[0].GetCells()[1]);
-    ASSERT_EQ(int32_value.GetValue(), 123);
+    const auto int32_value = std::get<int32_t>(table->GetRows()[0].GetCells()[1]->GetValue());
+    ASSERT_EQ(int32_value, 123);
 
-    const auto& bool_value = static_cast<CellBool&>(*table->GetRows()[0].GetCells()[2]);
-    ASSERT_EQ(bool_value.GetValue(), true);
+    const auto bool_value = std::get<bool>(table->GetRows()[0].GetCells()[2]->GetValue());
+    ASSERT_EQ(bool_value, true);
 }
 
 TEST(InsertQueryHandlerTest, MissingValuesNoEqualSign) {
@@ -110,12 +110,12 @@ TEST(InsertQueryHandlerTest, MissingValuesNoEqualSign) {
     const auto& table = current_tables.at("t");
     ASSERT_EQ(table->GetRows().size(), 1);
 
-    const auto& string_value = static_cast<CellString&>(*table->GetRows()[0].GetCells()[0]);
-    ASSERT_EQ(string_value.GetValue(), "vasya");
+    const auto string_value = std::get<std::string>(table->GetRows()[0].GetCells()[0]->GetValue());
+    ASSERT_EQ(string_value, "vasya");
 
-    const auto& int32_value = static_cast<CellInt32&>(*table->GetRows()[0].GetCells()[1]);
-    ASSERT_EQ(int32_value.GetValue(), 52);
+    const auto int32_value = std::get<int32_t>(table->GetRows()[0].GetCells()[1]->GetValue());
+    ASSERT_EQ(int32_value, 52);
 
-    const auto& bool_value = static_cast<CellBool&>(*table->GetRows()[0].GetCells()[2]);
-    ASSERT_EQ(bool_value.GetValue(), true);
+    const auto bool_value = std::get<bool>(table->GetRows()[0].GetCells()[2]->GetValue());
+    ASSERT_EQ(bool_value, true);
 }
