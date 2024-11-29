@@ -84,7 +84,9 @@ Expression::Expression(const std::vector<Token>& tokens) {
         }
     }
     while (!operators.empty()) {
-        if (operators.top().GetType() != Token::Type::Operator && operators.top().GetType() != Token::Type::LogicKeyword && operators.top().GetValue() != "|") {
+        if (operators.top().GetType() != Token::Type::Operator &&
+            operators.top().GetType() != Token::Type::LogicKeyword &&
+            operators.top().GetValue() != "|") {
             throw std::runtime_error("Parentheses are wrong");
         }
         expression_.push_back(operators.top());
