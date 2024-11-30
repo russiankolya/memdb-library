@@ -85,7 +85,7 @@ void InsertQueryHandler::Parse() {
     }
 }
 
-Response InsertQueryHandler::Execute(
+std::unique_ptr<Table> InsertQueryHandler::Execute(
     std::map<std::string, std::unique_ptr<Table>>& current_tables) {
     Parse();
 
@@ -159,5 +159,5 @@ Response InsertQueryHandler::Execute(
         row.SetCells(std::move(cells));
         table->AddRow(std::move(row));
     }
-    return Response();
+    return nullptr;
 }

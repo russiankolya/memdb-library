@@ -214,7 +214,7 @@ void CreateQueryHandler::Parse() {
     }
 }
 
-Response CreateQueryHandler::Execute(
+std::unique_ptr<Table> CreateQueryHandler::Execute(
     std::map<std::string, std::unique_ptr<Table>>& current_tables) {
     Parse();
 
@@ -232,5 +232,5 @@ Response CreateQueryHandler::Execute(
     auto table = std::make_unique<Table>();
     table->SetScheme(std::move(scheme_));
     current_tables.emplace(std::move(table_name_), std::move(table));
-    return Response();
+    return nullptr;
 }

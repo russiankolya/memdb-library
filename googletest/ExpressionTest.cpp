@@ -9,7 +9,8 @@ TEST(TestExpression, ExpressionNoVariables) {
     const std::string expression = "((1 + 2) * 3) <= (|\"abcdef\" + \"abc\"|)";
     const Tokenizer tokenizer(expression);
     const auto& tokens = tokenizer.Tokenize();
-    const Expression expr(tokens);
+    Expression expr;
+    expr.Initialize(tokens);
     const auto res = expr.Calc(Row({}));
     ASSERT_EQ(std::get<bool>(res), true);
 }
@@ -18,7 +19,8 @@ TEST(TestExpression, ExpressionNoVariablesWithLogicalOperatorAnd) {
     const std::string expression = "(((1 + 2) * 3) <= (|\"abcdef\" + \"abc\"|)) AND (1 < 0)";
     const Tokenizer tokenizer(expression);
     const auto& tokens = tokenizer.Tokenize();
-    const Expression expr(tokens);
+    Expression expr;
+    expr.Initialize(tokens);
     const auto res = expr.Calc(Row({}));
     ASSERT_EQ(std::get<bool>(res), false);
 }
@@ -27,7 +29,8 @@ TEST(TestExpression, ExpressionNoVariablesWithLogicalOperatorNot) {
     const std::string expression = "(((1 + 2) * 3) <= (|\"abcdef\" + \"abc\"|)) AND NOT (1 < 0)";
     const Tokenizer tokenizer(expression);
     const auto& tokens = tokenizer.Tokenize();
-    const Expression expr(tokens);
+    Expression expr;
+    expr.Initialize(tokens);
     const auto res = expr.Calc(Row({}));
     ASSERT_EQ(std::get<bool>(res), true);
 }
@@ -36,7 +39,8 @@ TEST(TestExpression, ExpressionNoVariablesWithBytes) {
     const std::string expression = "(|0xaabbccddeeff| * 2 <= 12) OR false";
     const Tokenizer tokenizer(expression);
     const auto& tokens = tokenizer.Tokenize();
-    const Expression expr(tokens);
+    Expression expr;
+    expr.Initialize(tokens);
     const auto res = expr.Calc(Row({}));
     ASSERT_EQ(std::get<bool>(res), true);
 }
@@ -59,7 +63,8 @@ TEST(TestExpression, ExpressionWithVariable) {
     const std::string expression = "(x + 1) % 5 = 4";
     const Tokenizer expression_tokenizer(expression);
     const auto& expression_tokens = expression_tokenizer.Tokenize();
-    const Expression expr(expression_tokens);
+    Expression expr;
+    expr.Initialize(expression_tokens);
     const auto res = expr.Calc(tables["t"]->GetRows()[0]);
     ASSERT_EQ(std::get<bool>(res), true);
 }
@@ -68,7 +73,8 @@ TEST(TestExpression, ExpressionWithDifferentTypes) {
     const std::string expression = "true + 1";
     const Tokenizer tokenizer(expression);
     const auto& tokens = tokenizer.Tokenize();
-    const Expression expr(tokens);
+    Expression expr;
+    expr.Initialize(tokens);
     ASSERT_THROW(expr.Calc(Row({})), std::runtime_error);
 }
 
@@ -76,12 +82,14 @@ TEST(TestExpression, ExpressionWithMissingOpeningParanthesis) {
     const std::string expression = "(1 + 2) + 3)";
     const Tokenizer tokenizer(expression);
     const auto& tokens = tokenizer.Tokenize();
-    ASSERT_THROW(Expression expr(tokens), std::runtime_error);
+    Expression expr;
+    ASSERT_THROW(expr.Initialize(tokens), std::runtime_error);
 }
 
 TEST(TestExpression, ExpressionWithMissingClosingParanthesis) {
     const std::string expression = "((1 + 2) + 3";
     const Tokenizer tokenizer(expression);
     const auto& tokens = tokenizer.Tokenize();
-    ASSERT_THROW(Expression expr(tokens), std::runtime_error);
+    Expression expr;
+    ASSERT_THROW(expr.Initialize(tokens), std::runtime_error);
 }

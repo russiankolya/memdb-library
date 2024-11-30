@@ -1,9 +1,9 @@
 #pragma once
-#include <map>
+#include <memory>
 #include <vector>
+#include <map>
 
 #include "Table.h"
-#include "Response.h"
 #include "Token.h"
 
 class QueryHandler {
@@ -12,7 +12,7 @@ public:
     virtual ~QueryHandler() noexcept = default;
 
     virtual void Parse() = 0;
-    virtual Response Execute(std::map<std::string, std::unique_ptr<Table>> &current_tables) = 0;
+    virtual std::unique_ptr<Table> Execute(std::map<std::string, std::unique_ptr<Table>> &current_tables) = 0;
 
     static std::vector<uint8_t> HexStringToVector(const std::string& hex_string);
 

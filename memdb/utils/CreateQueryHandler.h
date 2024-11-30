@@ -7,7 +7,7 @@ public:
     explicit CreateQueryHandler(const std::vector<Token>& tokens);
 
     void Parse() override;
-    Response Execute(std::map<std::string, std::unique_ptr<Table>>& current_tables) override;
+    std::unique_ptr<Table> Execute(std::map<std::string, std::unique_ptr<Table>>& current_tables) override;
 
 private:
     enum class State {

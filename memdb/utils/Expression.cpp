@@ -33,7 +33,7 @@ size_t Expression::GetPrecedence(const Token& token) {
     throw std::runtime_error("Unknown operation type: " + token.GetValue());
 }
 
-Expression::Expression(const std::vector<Token>& tokens) {
+void Expression::Initialize(const std::vector<Token>& tokens) {
     std::stack<Token> operators;
     int pipe_count = 0;
     for (const auto& token : tokens) {
@@ -132,7 +132,10 @@ std::variant<int32_t, bool, std::string, std::vector<uint8_t>> Expression::Calc(
             continue;
         }
         if (type == Token::Type::Identifier) {
-            calculation_stack.push(value_by_identifier[value]);
+            if (!value_by_identifier.contains(value)) {
+                throw std::runtime_error("Unknown identifier: " + token.GetValue());
+            }
+            calculation_stack.push(value_by_identifier.at(value));
             continue;
         }
         if (type == Token::Type::Delimiter) {

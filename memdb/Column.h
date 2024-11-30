@@ -8,6 +8,10 @@ class Column {
 public:
     enum class Attribute { Unique, Autoincrement, Key };
 
+    Column() = default;
+    Column(const Column& other);
+    Column& operator=(const Column& other);
+
     const std::string& GetName() const;
     std::pair<Cell::Type, std::optional<size_t>> GetType() const;
     const std::unique_ptr<Cell>& GetDefaultValue() const;

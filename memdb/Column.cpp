@@ -2,6 +2,27 @@
 
 #include <set>
 
+Column::Column(const Column& other) {
+    name_ = other.name_;
+    type_ = other.type_;
+    if (other.default_value_) {
+        default_value_ = other.default_value_->Clone();
+    }
+    attributes_ = other.attributes_;
+}
+
+Column& Column::operator=(const Column& other) {
+    if (this != &other) {
+        name_ = other.name_;
+        type_ = other.type_;
+        if (default_value_) {
+            default_value_ = other.default_value_->Clone();
+        }
+        attributes_ = other.attributes_;
+    }
+    return *this;
+}
+
 const std::string& Column::GetName() const {
     return name_;
 }

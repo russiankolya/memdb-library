@@ -4,12 +4,12 @@
 
 #include "QueryHandler.h"
 
-class InsertQueryHandler : public QueryHandler {
+class InsertQueryHandler final : public QueryHandler {
 public:
-    InsertQueryHandler(const std::vector<Token>& tokens);
+    explicit InsertQueryHandler(const std::vector<Token>& tokens);
 
     void Parse() override;
-    Response Execute(std::map<std::string, std::unique_ptr<Table>> &current_tables) override;
+    std::unique_ptr<Table> Execute(std::map<std::string, std::unique_ptr<Table>> &current_tables) override;
 
 private:
     std::string table_name_;
