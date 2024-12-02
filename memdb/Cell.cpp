@@ -21,9 +21,11 @@ CellBytes::CellBytes(const std::vector<uint8_t> &value) noexcept
     : value_(std::make_shared<std::vector<uint8_t>>(value)) {
 }
 
-CellString::CellString(const std::shared_ptr<std::string> &value) : value_(value) {}
+CellString::CellString(const std::shared_ptr<std::string> &value) : value_(value) {
+}
 
-CellBytes::CellBytes(const std::shared_ptr<std::vector<uint8_t>> &value) : value_(value) {}
+CellBytes::CellBytes(const std::shared_ptr<std::vector<uint8_t>> &value) : value_(value) {
+}
 
 std::unique_ptr<Cell> CellInt32::Clone() const {
     return std::make_unique<CellInt32>(value_);
@@ -88,7 +90,6 @@ std::optional<size_t> CellString::GetSize() {
 std::optional<size_t> CellBytes::GetSize() {
     return value_->size();
 }
-
 
 void CellInt32::Encode(std::ofstream &out) {
     out << value_ << "\n";
