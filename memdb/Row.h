@@ -11,6 +11,7 @@ public:
     const std::vector<Column>& GetScheme() const;
 
     void SetCells(std::vector<std::unique_ptr<Cell>>&& cells);
+    void SetCell(size_t index, std::unique_ptr<Cell>&& cell);
     void AddCell(std::unique_ptr<Cell>&& cell);
 
 private:

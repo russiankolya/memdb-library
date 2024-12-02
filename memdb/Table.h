@@ -8,8 +8,10 @@ class Table {
 public:
     const std::vector<Column>& GetScheme() const;
     const std::vector<Row>& GetRows() const;
+    std::vector<Row>& GetMutableRows();
 
     void SetScheme(std::vector<Column>&& scheme);
+    void SetRows(std::vector<Row>&& rows);
     void AddRow(Row&& row);
 
 private:
