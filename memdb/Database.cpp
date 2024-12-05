@@ -131,14 +131,14 @@ std::vector<ResponseRow> Database::Execute(const std::string &query) {
 
     const auto query_handler = ChooseQueryHandler(tokens);
 
-    const auto& result_table = query_handler->Execute(current_tables_);
+    const auto &result_table = query_handler->Execute(current_tables_);
 
     if (result_table == nullptr) {
         return {};
     }
 
     std::vector<ResponseRow> response;
-    const auto& rows = result_table->GetRows();
+    const auto &rows = result_table->GetRows();
     response.reserve(rows.size());
     for (size_t i = 0; i < rows.size(); ++i) {
         response.emplace_back();
