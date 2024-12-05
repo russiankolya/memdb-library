@@ -1,4 +1,4 @@
-add_library(memdb Database.cpp Table.cpp Column.cpp Row.cpp Cell.cpp Response.cpp)
+add_library(memdb Database.cpp Table.cpp Column.cpp Row.cpp Cell.cpp ResponseRow.cpp)
 
 add_subdirectory(utils)
 

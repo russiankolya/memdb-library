@@ -1,8 +1,11 @@
 #include "Database.h"
 
-#include <utils/InsertQueryHandler.h>
 #include <utils/CreateQueryHandler.h>
+#include <utils/DeleteQueryHandler.h>
+#include <utils/InsertQueryHandler.h>
+#include <utils/SelectQueryHandler.h>
 #include <utils/Tokenizer.h>
+#include <utils/UpdateQueryHandler.h>
 
 #include <fstream>
 #include <set>
@@ -110,16 +113,40 @@ std::unique_ptr<QueryHandler> ChooseQueryHandler(const std::vector<Token> &token
     if (tokens[0].GetValue() == "insert") {
         return std::make_unique<InsertQueryHandler>(tokens);
     }
+    if (tokens[0].GetValue() == "select") {
+        return std::make_unique<SelectQueryHandler>(tokens);
+    }
+    if (tokens[0].GetValue() == "update") {
+        return std::make_unique<UpdateQueryHandler>(tokens);
+    }
+    if (tokens[0].GetValue() == "delete") {
+        return std::make_unique<DeleteQueryHandler>(tokens);
+    }
     return nullptr;
 }
 
-Response Database::Execute(const std::string &query) {
+std::vector<ResponseRow> Database::Execute(const std::string &query) {
     const Tokenizer tokenizer(query);
     const auto tokens = tokenizer.Tokenize();
 
     const auto query_handler = ChooseQueryHandler(tokens);
 
-    query_handler->Execute(current_tables_);
+    const auto& result_table = query_handler->Execute(current_tables_);
 
-    return Response{};
+    if (result_table == nullptr) {
+        return {};
+    }
+
+    std::vector<ResponseRow> response;
+    const auto& rows = result_table->GetRows();
+    response.reserve(rows.size());
+    for (size_t i = 0; i < rows.size(); ++i) {
+        response.emplace_back();
+        const auto &row = rows[i].GetCells();
+        const auto &scheme = rows[i].GetScheme();
+        for (size_t j = 0; j < row.size(); ++j) {
+            response.back().Set(scheme[j].GetName(), row[j]->GetValue());
+        }
+    }
+    return response;
 }

@@ -1,6 +1,6 @@
 #include "DeleteQueryHandler.h"
 
-DeleteQueryHandler::DeleteQueryHandler(const std::vector<Token>& tokens) : QueryHandler(tokens_) {}
+DeleteQueryHandler::DeleteQueryHandler(const std::vector<Token>& tokens) : QueryHandler(tokens) {}
 
 void DeleteQueryHandler::Parse() {
     if (tokens_.size() < 4) {
@@ -34,7 +34,7 @@ std::unique_ptr<Table> DeleteQueryHandler::Execute(
 
     const auto& table = current_tables[table_name_];
     std::vector<Row> new_rows;
-    for (const auto& row : table->GetRows()) {
+    for (auto& row : table->GetMutableRows()) {
         const auto& where_expression_result = where_expression_.Calc(row);
         if (!std::holds_alternative<bool>(where_expression_result)) {
             throw std::runtime_error("Where expression does not match expected format");

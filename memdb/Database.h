@@ -1,5 +1,5 @@
 #pragma once
-#include <Response.h>
+#include <ResponseRow.h>
 #include <Table.h>
 
 #include <map>
@@ -9,7 +9,7 @@ public:
     void LoadFromFile(std::ifstream &in);
     void SaveToFile(std::ofstream &out);
 
-    Response Execute(const std::string &query);
+    std::vector<ResponseRow> Execute(const std::string &query);
 
 private:
     std::map<std::string, std::unique_ptr<Table>> current_tables_;
